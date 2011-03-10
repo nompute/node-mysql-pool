@@ -6,8 +6,8 @@ node-mysql-pool is MySQL [connection pool](http://en.wikipedia.org/wiki/Connecti
 for [node.js](http://nodejs.org/) on top of Felix Geisendörfer's great MySQL client
 [node-mysql](https://github.com/felixge/node-mysql).
 
-Using a connection pool instead of a single connection should render a markable
-speed-up, when you have may short living connections, e.g. with message board applications.
+Using a connection pool instead of a single connection should render a remarkable
+speed-up, when you have many short living connections, e.g. with message board applications.
 
 ## Current status
 
