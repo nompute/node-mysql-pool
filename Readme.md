@@ -44,7 +44,7 @@ Otherwise the requirements are the same as for
     client.properties.user = 'root';
     client.properties.password = 'root';
     
-    client.connectPool(4);
+    client.connect(4);
     
     client.query("SELECT 'Hello, World!' AS hello", function(err, rows, fields) {
       if(err) throw err;
@@ -60,16 +60,16 @@ Otherwise the requirements are the same as for
 
 ## API
 
-The API of this module is as similar to node-mysql as possible, with three exceptions:
+The API of this module is as similar to node-mysql as possible, with two exceptions:
 
 * You must always supply a callback function. Using listeners is not supported.
-* You connect using `connectPool([poolsize], [cb])` and shut the pool down using
-  `endPool([cb])`.
 * Property `x`, when not supplied while creation, are to be set to `instance.properties.x`.
+
+When called back, `this` will be the used connection.
 
 ### new mysqlPool.Pool([options])
 
-Creates a new, currently empty, pool. Any property for the signle connections or
+Creates a new, currently empty, pool. Any property for the single connections or
 the connectionpool, resp., can be set using the `options` object.
 
 ### client.poolSize = 1
@@ -88,38 +88,46 @@ Property `xyz` of the `Client` object.
 See the [original documentation](https://github.com/felixge/node-mysql/blob/master/Readme.md)
 of node-mysql for more property related information.
 
-### client.connectPool([poolsize], [cb])
+### client.connect([poolsize], [cb])
+
+    cb = function(err, result)
+    result = { [connections: Number], [errors: Array] }
 
 Establishes a new connection pool with the size of `poolsize`.
 
 If the parameter `poolsize` is omitted, the value of `client.poolsize`, or 1 is used.
 
-    cb = function(err, result={ [connections: Number], [errors: Array] })
-
 Only if all connection attemps failed `err` is supplied.
 If some connections failed, `result.error` will contain a list of Errors.
 If some or all connections succeeded, `results.connections` will contains the pool's size.
 
-### client.endPool([cb])
+### client.end([cb])
 
 Shuts down all connections, not waiting for any enqueued and waiting queries.
 Active queries won't be aborted, though.
 
-`cb` will be called back once for every shut down connection. (Subject to change!)
+`cb` will be called once for every shut down connection. (Subject to change!)
+
+### client.useDatabase(database, cb)
+
+Changes the database for every connection.
+
+### client.destroy()
+
+Kills every connection. You do not want do use this method!
 
 ### client.xzy(..., cb)
 
-All methods of the `Client` object will be supported.
+All methods of the `Client` object will be supported -- with `connect(...)`, `end(...)`,
+`useDatabase(...)` and `destroy(...)` being overwritten.
 
 See the [original documentation](https://github.com/felixge/node-mysql/blob/master/Readme.md)
-of node-mysql for information.
+of node-mysql for method related information.
 
 Beware:
 
-* Twink twice before calling `useDatabase(...)`: It will only affect a single random
-  connection. Do you really want that?
-* Invoking `destroy` kills a random connection. While it won't couse harm right away,
-  you may observe errors while shutting down.
+* You must supply a callback method, if you have any parameters.
+* No events are emitted but error.
 
 ### event: 'error' (err)
 
@@ -128,7 +136,7 @@ You should always supply a callback function!
 
 ## Todo
 
-* The `endPool([cb])` method has a strange API.
+* The `end([cb])`, `destroy([cb])` and `useDatabase(db, cb)` methods have a strange API.
 
 ## Licence
 
