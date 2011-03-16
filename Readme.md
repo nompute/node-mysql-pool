@@ -36,7 +36,7 @@ Otherwise the requirements are the same as for
 
 <h2 id="Tutorial">Tutorial</h2>
 
-    var MySQLPool = require("./node-mysql-pool").MySQLPool,
+    var MySQLPool = require("mysql-pool").MySQLPool,
         pool = new MySQLPool({database: "test"});
         
     pool.properties.user = 'root';
@@ -59,6 +59,14 @@ Otherwise the requirements are the same as for
 You probably do not have to change anything if you already used
 [node-mysql](https://github.com/felixge/node-mysql/)
 or any of [its forks](https://github.com/felixge/node-mysql/network)!
+
+<h2 id="Installation">Installation</h2>
+
+* Using [npm](http://npmjs.org/): `npm install mysql-pool`
+* Using git:
+    * `git clone git@github.com:Kijewski/node-mysql-pool.git node-mysql-pool`
+    *     *or*
+    * `git submodule add git@github.com:Kijewski/node-mysql-pool.git deps/node-mysql-pool`
 
 <h2 id="API">API</h2>
 
