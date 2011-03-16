@@ -25,7 +25,7 @@ If you find an error, please file an [issue](https://github.com/Kijewski/node-my
 This module was only tested using node >= 0.4.x. It may work for older versions,
 but I am not going to actively support them.
 
-The node-mysql-pool works even with unknown forks of node-mysql, as long as
+The node-mysql-pool even works with unknown forks of node-mysql, as long as
 
 * the last parameter of any method is the callback function,
 * no events *at all* are emitted when supplying a callback function, and
@@ -109,7 +109,7 @@ Defaults:
     * The number of connections to establish to the server.
 * `pool.Client`:
     * If you do not want the npm version of node-mysql—e.g. because you forked and
-      tweaked it for you purposes—you can supply a different `Client` object.
+      tweaked it for your purposes—you can supply a different `Client` object.
 * `pool.properties.xyz = undefined`:
     * Property `xyz` of the `Client` object.
       See the [original documentation](https://github.com/felixge/node-mysql/blob/master/Readme.md)
@@ -143,6 +143,7 @@ All methods of the `Client` object will be supported—with `connect(...)`, `end
 If you do not use a fork, that are currently:
 
     query(sql, [params], cb)
+    ping([cb]))
     statistics([cb])
 
 See the [original documentation](https://github.com/felixge/node-mysql/blob/master/Readme.md)
