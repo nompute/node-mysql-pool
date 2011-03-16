@@ -2,7 +2,7 @@
 
 <h2 id="Purpose">Purpose</h2>
 
-node-mysql-pool is MySQL [connection pool](http://en.wikipedia.org/wiki/Connection_pool)
+node-mysql-pool is a MySQL [connection pool](http://en.wikipedia.org/wiki/Connection_pool)
 for [node.js](http://nodejs.org/) on top of Felix Geisendörfer's MySQL client
 [node-mysql](https://github.com/felixge/node-mysql).
 
@@ -16,7 +16,7 @@ it stable for my testings.
 
 If you find an error, please file an [issue](https://github.com/Kijewski/node-mysql-pool/issues)!
 
-<h2 id="Contributers">Contributers</h2>
+<h2 id="Contributors">Contributors</h2>
 
 * [René Kijewski](https://github.com/Kijewski)
 
