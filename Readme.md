@@ -27,11 +27,9 @@ but I am not going to actively support them.
 
 The node-mysql-pool works even with unknown forks of node-mysql, as long as
 
-* the last parameter of a method is callback function
-* you connect using `connect()`, disconnection using `end()`,
-* the constructor gets an object containing the parameters,
-* no events are emitted when supplying a callback function, and
-* the when the first parameter of a callback is set, it denotes an error.
+* the last parameter of any method is the callback function,
+* no events *at all* are emitted when supplying a callback function, and
+* when the first parameter of a callback is set, it denotes an error.
 
 Otherwise the requirements are the same as for
 [node-mysql](https://github.com/felixge/node-mysql/blob/master/Readme.md).
