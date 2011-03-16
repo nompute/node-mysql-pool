@@ -1,26 +1,26 @@
-# node-mysql-pool
+<h1 id="Readme">node-mysql-pool</h1>
 
-## Purpose
+<h2 id="Purpose">Purpose</h2>
 
 node-mysql-pool is MySQL [connection pool](http://en.wikipedia.org/wiki/Connection_pool)
-for [node.js](http://nodejs.org/) on top of Felix Geisendörfer's great MySQL client
+for [node.js](http://nodejs.org/) on top of Felix Geisendörfer's MySQL client
 [node-mysql](https://github.com/felixge/node-mysql).
 
 Using a connection pool instead of a single connection should render a remarkable
 speed-up, when you have many short living connections, e.g. with message board applications.
 
-## Current status
+<h2 id="Status">Current status</h2>
 
 This module is currently not backed by proper unit testing. Nevertheless I found
 it stable for my testings.
 
 If you find an error, please file an [issue](https://github.com/Kijewski/node-mysql-pool/issues)!
 
-## Contributers
+<h2 id="Contributers">Contributers</h2>
 
-* René Kijewski ([Kijewski](https://github.com/Kijewski))
+* [René Kijewski](https://github.com/Kijewski)
 
-## Compatibility
+<h2 id="Compatibility">Compatibility</h2>
 
 This module was only tested using node >= 0.4.x. It may work for older versions,
 but I am not going to actively support them.
@@ -36,60 +36,51 @@ The node-mysql-pool works even with unknown forks of node-mysql, as long as
 Otherwise the requirements are the same as for
 [node-mysql](https://github.com/felixge/node-mysql/blob/master/Readme.md).
 
-## Tutorial
+<h2 id="Tutorial">Tutorial</h2>
 
     var MySQLPool = require("./node-mysql-pool").MySQLPool,
-        client = new MySQLPool({database: "test"});
+        pool = new MySQLPool({database: "test"});
         
-    client.properties.user = 'root';
-    client.properties.password = 'root';
+    pool.properties.user = 'root';
+    pool.properties.password = 'root';
     
-    client.connect(4);
+    pool.connect(4);
     
-    client.query("SELECT 'Hello, World!' AS hello", function(err, rows, fields) {
+    pool.query("SELECT 'Hello, World!' AS hello", function(err, rows, fields) {
       if(err) throw err;
       console.log(rows[0].hello);
     });
     
     for(var i = 0; i < 10; ++i) {
-      client.query("SELECT SLEEP(2), ? AS i", [i], function(err, rows, fields) {
+      pool.query("SELECT SLEEP(2), ? AS i", [i], function(err, rows, fields) {
         if(err) throw err;
         console.log("Slept: " + rows[0].i);
       });
     }
 
-## API
+You probably do not have to change anything if you already used
+[node-mysql](https://github.com/felixge/node-mysql/)
+or any of [its forks](https://github.com/felixge/node-mysql/network)!
+
+<h2 id="API">API</h2>
 
 The API of this module is as similar to node-mysql as possible, with two exceptions:
 
 * You must always supply a callback function. Using listeners is not supported.
 * Property `x`, when not supplied while creation, are to be set to `instance.properties.x`.
 
-When called back, `this` will be the used connection.
+When called back, `this` will be the used connection. (You probably never need to
+know which connection was actually used.)
 
-### new mysqlPool.Pool([options])
+<h3 id="NewPool">Creation of a new pool</h3>
 
-Creates a new, currently empty, pool. Any property for the single connections or
+    new mysqlPool.Pool([options])
+
+creates a new, currently empty, pool. Any property for the single connections or
 the connectionpool, resp., can be set using the `options` object.
 
-### client.poolSize = 1
-
-The number of connections to establish to the server.
-
-### client.Client = require("mysql").Client
-
-If you do not want the npm version of node-mysql -- e.g. because you forked and
-tweaked it for you purposes -- you can supply a different `Client` object.
-
-### client.properties.xyz = undefined
-
-Property `xyz` of the `Client` object.
-
-See the [original documentation](https://github.com/felixge/node-mysql/blob/master/Readme.md)
-of node-mysql for more property related information.
-
-### client.connect([poolsize], [cb])
-
+    client.connect([poolsize], [cb])
+    // with:
     cb = function(err, result)
     result = { [connections: Number], [errors: Array] }
 
@@ -101,43 +92,81 @@ Only if all connection attemps failed `err` is supplied.
 If some connections failed, `result.error` will contain a list of Errors.
 If some or all connections succeeded, `results.connections` will contains the pool's size.
 
-### client.end([cb])
+<h3 id="Options">Options</h3>
 
-Shuts down all connections, not waiting for any enqueued and waiting queries.
-Active queries won't be aborted, though.
+Defaults:
 
-`cb` will be called once for every shut down connection. (Subject to change!)
+    pool.poolSize = 1
+    pool.Client = require("mysql").Client
 
-### client.useDatabase(database, cb)
+* `pool.poolSize`:
+    * The number of connections to establish to the server.
+* `pool.Client`:
+    * If you do not want the npm version of node-mysql—e.g. because you forked and
+      tweaked it for you purposes—you can supply a different `Client` object.
+* `pool.properties.xyz = undefined`:
+    * Property `xyz` of the `Client` object.
+      See the [original documentation](https://github.com/felixge/node-mysql/blob/master/Readme.md)
+      of node-mysql for more property related information.
 
-Changes the database for every connection.
+<h3 id="AllConnections">Methods affecting all connections</h3>
 
-### client.destroy()
+    client.useDatabase(database, cb)
+    client.end([cb])
+    client.destroy()
 
-Kills every connection. You do not want do use this method!
+* `pool.useDatabase(database, cb)`:
+    * Changes the database for every connection.
+* `pool.end([cb])`:
+    * Shuts down every connection, not waiting for any enqueued and waiting queries.
+      Active queries won't be aborted, though.
+* `pool.destroy()`:
+    * Kills every connection. You do not want do use this method!
 
-### client.xzy(..., cb)
+For all methods you can [invoke on a single connection](#SingleConnection), there is
+an equivalent `methodnameAll(...)` method. E.g. you can use `pool.pingAll(cb)`, if
+you want you to ping all connections for some reason.
 
-All methods of the `Client` object will be supported -- with `connect(...)`, `end(...)`,
+`cb` will be called once for every connection affected. [Subject to change!](#Todo)
+
+<h3 id="SingleConnection">Methods invoked on a single connection</h3>
+
+All methods of the `Client` object will be supported—with `connect(...)`, `end(...)`,
 `useDatabase(...)` and `destroy(...)` being overwritten.
+
+If you do not use a fork, that are currently:
+
+    query(sql, [params], cb)
+    statistics([cb])
 
 See the [original documentation](https://github.com/felixge/node-mysql/blob/master/Readme.md)
 of node-mysql for method related information.
 
-Beware:
+**Beware:**
 
-* You must supply a callback method, if you have any parameters.
-* No events are emitted but error.
+* You must supply a callback method, if you have *any* parameters.
+* No events are emitted but [error](#EventError).
 
-### event: 'error' (err)
+<h3 id="NoConnection">Methods unrelated to connections</h3>
+
+    format(sql, params)
+    function(val)
+
+Will behave exactly like the original methods. They do not belong to a single
+connection.
+
+<h3 id="EventError">event: 'error' (err)</h3>
 
 Emitted if end only if an error occurred and no callback function was supplied.
 You should always supply a callback function!
 
-## Todo
+<h2 id="Todo">Todo</h2>
 
-* The `end([cb])`, `destroy([cb])` and `useDatabase(db, cb)` methods have a strange API.
+* The methods effecting all connections have a strange API. `cb` should be called
+  only once.
 
-## Licence
 
-node-mysql-pool is licensed under the MIT license.
+<h2 id="Licence">Licence</h2>
+
+node-mysql-pool is licensed under the
+[MIT license](https://github.com/Kijewski/node-mysql-pool/blob/master/License).
